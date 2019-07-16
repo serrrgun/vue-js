@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="../js/vue.js"></script>
+    <title>Второе занятие | Домашнее задание</title>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="sample">
+            <form>
+                <div class="progress">
+                    <div class="progress-bar"></div>
+                </div>
+                <div>
+                    <div class="form-group" v-for="(item, index) in info">
+                        <label>{{item.name}}</label>
+                        <input type="text" class="form-control" :value="item.value" @input="onInput(index, $event.target.value)">
+                        {{controls.error}}
+                    </div>
+                </div>
+                <button class="btn btn-primary">Send Data</button>
+            </form>
+            <div>
+                <table class="table table-bordered">
+                    <tr v-for="(item, index) in info">
+                        <td>{{item.name}}</td>
+                        <td>{{item.value}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+
+    new Vue({
+
+        el: '.sample',
+
+        data: {
+            info: [
+                {
+                    name: 'Name',
+                    value: '',
+                    pattern: /^[a-zA-Z ]{2,30}$/
+                },
+                {
+                    name: 'Phone',
+                    value: '',
+                    pattern: /^[0-9]{7,14}$/
+                },
+                {
+                    name: 'Email',
+                    value: '',
+                    pattern: /.+/
+                },
+                {
+                    name: 'Some Field 1',
+                    value: '',
+                    pattern: /.+/
+                },
+                {
+                    name: 'Some Field 2',
+                    value: '',
+                    pattern: /.+/
+                },
+            ],
+            controls: []    
+        },
+        beforeMount() {
+            for(let i = 0; i < this.info.length; i++) {
+                this.controls.push({
+                    error: true
+                });
+            }
+        },
+        methods: {
+            onInput(index, value) {
+                let control = this.controls[index];
+                let data = this.info[index];
+                
+                data.value = value;
+                control.error = data.pattern.test(value);
+                
+            }
+        },
+
+    });
+
+</script>
+
+</html>
