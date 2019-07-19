@@ -9,26 +9,27 @@
     <link rel="stylesheet" href="../css/font-awesome.min.css">
     <link rel="stylesheet" href="../css/styles.css">
     <script src="../js/vue.js"></script>
-    <title>Второе занятие | Домашнее задание</title>
+    <title>Второе занятие | Домашнее задание 1</title>
 </head>
 
 <body>
     <div class="wrapper">
         <div class="sample">
-            <form>
+            <form @submit.prevent="formSubmited = true" v-if="!formSubmited">
                 <div class="progress">
-                    <div class="progress-bar"></div>
+                    <div class="progress-bar" :style="progressWidth"></div>
                 </div>
                 <div>
                     <div class="form-group" v-for="(item, index) in info">
                         <label>{{item.name}}</label>
+                        <span class="fa" v-if="controls[index].activated" :class=" controls[index].error ? 'fa-exclamation-circle text-danger' : 'fa-check-circle text-success'"></span>
                         <input type="text" class="form-control" :value="item.value" @input="onInput(index, $event.target.value)">
                         {{controls.error}}
                     </div>
                 </div>
-                <button class="btn btn-primary">Send Data</button>
+                <button class="btn btn-primary" :disabled="done < info.length">Send Data</button>
             </form>
-            <div>
+            <div v-else>
                 <table class="table table-bordered">
                     <tr v-for="(item, index) in info">
                         <td>{{item.name}}</td>
@@ -73,14 +74,18 @@
                     pattern: /.+/
                 },
             ],
-            controls: []    
+            controls: [],
+            formSubmited: false    
         },
         beforeMount() {
+            // при хуке beforeMount создаем массив для контроля ошибок
             for(let i = 0; i < this.info.length; i++) {
                 this.controls.push({
-                    error: true
+                    error: !this.info[i].pattern.test(this.info[i].value),
+                    activated: this.info[i].value != ''
                 });
             }
+            console.log(this.controls);
         },
         methods: {
             onInput(index, value) {
@@ -88,10 +93,29 @@
                 let data = this.info[index];
                 
                 data.value = value;
-                control.error = data.pattern.test(value);
+                control.error = !data.pattern.test(value);
+                control.activated = true;
                 
             }
         },
+        computed:  {
+            done() {
+                let done = 0;
+
+                for(let i = 0; i < this.controls.length; i++) {
+                    if(!this.controls[i].error) {
+                        done++;
+                    }
+                }
+
+                return done;
+            },
+            progressWidth() {
+                return {
+                    width: (this.done / this.info.length  * 100) + '%'
+                }
+            }
+        }
 
     });
 
